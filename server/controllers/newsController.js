@@ -13,11 +13,10 @@ export const getAllNews = (req, res) => {
         message: error.message,
       });
     });
-
-  return res;
 };
 
-export const getNewsById = (id, res) => {
+export const getNewsById = (req, res) => {
+  const id = req.params.id;
   try {
     if (id) {
       // if id found
@@ -42,10 +41,10 @@ export const getNewsById = (id, res) => {
       message: error,
     });
   }
-  return res;
 };
 
-export const addNews = (data, res) => {
+export const addNews = (req, res) => {
+  const data = req.body;
   News.create({
     title: data.title,
     description: data.description,
@@ -68,27 +67,23 @@ export const addNews = (data, res) => {
   return res;
 };
 
-export const updateNews = (id, body) => {
-  let response = {};
+export const updateNews = (req, res) => {
+  const id = req.params.id;
+  const body = req.body;
   News.findOneAndUpdate({ _id: id }, body, { new: true })
     .then((doc) => {
-      response.status = 200;
-      response.data = doc;
-      response.isError = false;
+      res.send(doc);
     })
     .catch((err) => {
-      response.status = 500;
-      response.error = { error: err.message };
-      response.isError = true;
+      res.status(500).send({ error: err.message })
     });
-  return response;
 };
 
-export const deleteNews = (id, res) => {
+export const deleteNews = (req, res) => {
+  const id = req.params.id;
   News.findByIdAndDelete(id)
     .then(() => {
       res.send({ message: "Delete Sucessful." });
     })
     .catch((err) => [res.send({ error: err.message })]);
-  return res;
 };
